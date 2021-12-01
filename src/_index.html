@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GAS Markdown Editor</title>
+    <?!= includeHtml('_assets') ?>
+    <style type="text/css">
+      <?!= includeHtml('_css') ?>
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="application/json" id="google-drive-file-id">
+      <?!= googleDriveFileId ?>
+    </script>
+    <?!= includeHtml('_js_assets') ?>
+    <?!= includeHtml('_js_main') ?>
+  </body>
+</html>
