@@ -9,7 +9,11 @@ const { markmap } = window;
 const {Markmap, loadCSS, loadJS} = markmap;
 
 const GS = google.script;
-const GOOGLE_DRIVE_FILE_ID = JSON.parse(document.getElementById("google-drive-file-id").textContent)["googleDriveFileId"];
+const CONFIG = JSON.parse(document.getElementById("config").textContent);
+const FILE_ID = CONFIG["fileId"];
+const FILE_NAME = CONFIG["fileName"];
+const FILE_URL = CONFIG["fileUrl"];
+
 
 class Editor extends React.Component {
   constructor(props) {
@@ -29,6 +33,10 @@ class Editor extends React.Component {
           matchBrackets: true,
           showCursorWhenSelecting: true,
           theme: "monokai",
+          showTrailingSpace: true,
+          styleActiveLine: true,
+          foldGutter: true,
+          gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
         }
       );
     codeMirror.on("change", this.handleCodeMirrorChange.bind(this));
@@ -49,7 +57,7 @@ class Editor extends React.Component {
         console.log(ret);
         alert(ret);
       })
-      .getMarkdownTextFromfile(GOOGLE_DRIVE_FILE_ID);
+      .getMarkdownTextFromfile(FILE_ID);
   }
 
   handleCodeMirrorChange() {
@@ -138,14 +146,14 @@ const saveAsMarkdownFile = (function() {
       //console.log( time + "：throttle：" + lag);
       GS.run
         .withSuccessHandler((_) => {
-          console.log("save: " + GOOGLE_DRIVE_FILE_ID);
+          console.log("save: " + FILE_ID);
           callback();
         })
         .withFailureHandler((ret) => {
           console.log(ret);
           alert(ret);
         })
-        .saveAsMarkdownFile(GOOGLE_DRIVE_FILE_ID, content);
+        .saveAsMarkdownFile(FILE_ID, content);
       time = Date.now();
     } else {
       clearTimeout(debounceTimer);
@@ -153,14 +161,14 @@ const saveAsMarkdownFile = (function() {
         //console.log( time + "：debounce：" + (interval - lag + debounceDelay));
         GS.run
         .withSuccessHandler((_) => {
-          console.log("save: " + GOOGLE_DRIVE_FILE_ID);
+          console.log("save: " + FILE_ID);
           callback();
         })
         .withFailureHandler((ret) => {
           console.log(ret);
           alert(ret);
         })
-        .saveAsMarkdownFile(GOOGLE_DRIVE_FILE_ID, content);
+        .saveAsMarkdownFile(FILE_ID, content);
       }, (interval - lag + debounceDelay));
     }
   }
@@ -172,6 +180,7 @@ class App extends React.Component {
     this.state = {
       savedAt: new Date(),
       content: "",
+      title: FILE_NAME,
     };
   }
 
@@ -190,9 +199,12 @@ class App extends React.Component {
   render() {
     return (
       <div id="app-container">
+        <div id="header">
+          <span class="title">{this.state.title}</span>
+          <span class="saved-at">saved at: {this.state.savedAt.toLocaleString()}</span>
+        </div>
         <Editor onChangeContent={this.changeContent.bind(this)} />
         <Preview content={this.state.content} />
-        <div>saved at: {this.state.savedAt.toLocaleString()}</div>
       </div>
     );
   }

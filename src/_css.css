@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&family=Noto+Sans+Mono&display=swap');
+
 html,
 body {
   margin: 0;
@@ -11,13 +14,31 @@ body {
 
 #app-container {
   display: grid;
-  grid-template-rows: 100%;
-  grid-template-columns: 50%;
+  grid-template-rows: 30px 1fr;
+  grid-template-columns: 40% 1fr;
   height: 100%;
 }
 
-#editor-wrapper {
+#header {
   grid-row: 1 / 2;
+  grid-column: 1 / 3;
+
+  display: flex;
+  justify-content: space-between;
+
+  padding: 5px 10px;
+
+  color: white;
+  background-color: #272823;
+  font-family: Helvetica, arial, sans-serif;
+}
+
+#header span{
+  display: inline-block;
+}
+
+#editor-wrapper {
+  grid-row: 2;
   grid-columns: 1 / 2;
   overflow: scroll;
 }
@@ -26,8 +47,7 @@ body {
   font-family: Helvetica, arial, sans-serif;
   font-size: 14px;
   line-height: 1.6;
-  grid-row: 1 / 2;
-  grid-columns: 2 / 3;
+  grid-row: 2;
   height: 100%;
   padding: 5px;
   overflow: scroll;
@@ -37,13 +57,14 @@ body {
 #markmap {
   width: 100%;
   height: 100%;
-  grid-row: 1 / 2;
-  grid-columns: 2 / 3;
+  grid-row: 2;
   background-color: white;
 }
 
 .CodeMirror {
   height: 100%;
+  font-family: 'Noto Sans Mono', 'Noto Sans JP', monospace, sans-serif;
+  font-size: 14px;
   /* background-color: rgb(39, 40, 35); */
 }
 
