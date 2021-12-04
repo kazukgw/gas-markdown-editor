@@ -22,7 +22,22 @@ class Editor extends React.Component {
   }
 
   componentDidMount() {
-    const self = this;
+    CodeMirror.Vim.defineAction("fold", function(cm, _ /* actionArgs */){
+      CodeMirror.commands.fold(cm);
+    });
+    CodeMirror.Vim.defineAction("foldAll", function(cm, _){
+      CodeMirror.commands.foldAll(cm);
+    });
+    CodeMirror.Vim.defineAction("unfold", function(cm, _ /* actionArgs */){
+      CodeMirror.commands.unfold(cm);
+    });
+    CodeMirror.Vim.defineAction("unfoldAll", function(cm, _){
+      CodeMirror.commands.unfoldAll(cm);
+    });
+    CodeMirror.Vim.mapCommand("zc", "action", "fold", {}, {context: "normal"});
+    CodeMirror.Vim.mapCommand("zM", "action", "foldAll", {}, {context: "normal"});
+    CodeMirror.Vim.mapCommand("zo", "action", "unfold", {}, {context: "normal"});
+    CodeMirror.Vim.mapCommand("zR", "action", "unfoldAll", {}, {context: "normal"});
     const codeMirror = CodeMirror.fromTextArea(
       document.getElementById("editor"),
       {
