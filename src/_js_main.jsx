@@ -26,6 +26,7 @@ class Editor extends React.Component {
     const codeMirror = CodeMirror.fromTextArea(
       document.getElementById("editor"),
       {
+        lineWrapping: true,
         lineNumbers: true,
         mode: "text/x-markdown",
         keyMap: "vim",
@@ -36,6 +37,7 @@ class Editor extends React.Component {
         styleActiveLine: true,
         foldGutter: true,
         gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+        scrollbarStyle: "overlay",
       }
     );
     codeMirror.on("change", this.handleCodeMirrorChange.bind(this));
