@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&family=Noto+Sans+Mono&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&family=Noto+Sans+Mono&display=swap");
 
 html,
 body {
@@ -33,14 +33,13 @@ body {
   font-family: Helvetica, arial, sans-serif;
 }
 
-#header span{
+#header span {
   display: inline-block;
 }
 
 #editor-wrapper {
   grid-row: 2;
   grid-columns: 1 / 2;
-  overflow: scroll;
 }
 
 #preview {
@@ -63,7 +62,7 @@ body {
 
 .CodeMirror {
   height: 100%;
-  font-family: 'Noto Sans Mono', 'Noto Sans JP', monospace, sans-serif;
+  font-family: "Noto Sans Mono", "Noto Sans JP", monospace, sans-serif;
   font-size: 14px;
   /* background-color: rgb(39, 40, 35); */
 }
@@ -445,4 +444,3 @@ body {
 * {
   -webkit-print-color-adjust: exact;
 }
-
