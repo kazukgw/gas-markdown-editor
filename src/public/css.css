@@ -29,6 +29,18 @@ body {
   font-family: Helvetica, arial, sans-serif;
 }
 
+/*
+#footer {
+  width: 100%;
+  max-height: 30px;
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  background-color: #272823;
+  font-family: Helvetica, arial, sans-serif;
+}
+*/
+
 #header span,
 #header a {
   display: inline-block;

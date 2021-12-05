@@ -3,13 +3,15 @@
   <head>
     <title>GAS Markdown Editor</title>
     <style type="text/css">
-      <?!= includeHtml('_css') ?>
+      <?!= includeHtml('public/css') ?>
     </style>
   </head>
   <body>
-    <h1>新しいファイルを作成しました。</h1>
-    <div>
-      <a target="_blank" href="<?!= editorUrl ?>"> <?!= editorUrl ?></a>
+    <div style='margin: 20px; font-family: "Noto Sans Mono", "Noto Sans JP", monospace, sans-serif;'>
+      <h1>新しいファイルを作成しました</h1>
+      <div>
+        <a target="_blank" href="<?!= editorUrl ?>"> <?!= editorUrl ?></a>
+      </div>
     </div>
   </body>
 </html>

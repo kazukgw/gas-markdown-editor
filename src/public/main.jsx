@@ -26,22 +26,46 @@ class Editor extends React.Component {
   }
 
   componentDidMount() {
-    CodeMirror.Vim.defineAction("fold", function(cm, _ /* actionArgs */){
+    CodeMirror.Vim.defineAction("fold", function (cm, _ /* actionArgs */) {
       CodeMirror.commands.fold(cm);
     });
-    CodeMirror.Vim.defineAction("foldAll", function(cm, _){
+    CodeMirror.Vim.defineAction("foldAll", function (cm, _) {
       CodeMirror.commands.foldAll(cm);
     });
-    CodeMirror.Vim.defineAction("unfold", function(cm, _ /* actionArgs */){
+    CodeMirror.Vim.defineAction("unfold", function (cm, _ /* actionArgs */) {
       CodeMirror.commands.unfold(cm);
     });
-    CodeMirror.Vim.defineAction("unfoldAll", function(cm, _){
+    CodeMirror.Vim.defineAction("unfoldAll", function (cm, _) {
       CodeMirror.commands.unfoldAll(cm);
     });
-    CodeMirror.Vim.mapCommand("zc", "action", "fold", {}, {context: "normal"});
-    CodeMirror.Vim.mapCommand("zM", "action", "foldAll", {}, {context: "normal"});
-    CodeMirror.Vim.mapCommand("zo", "action", "unfold", {}, {context: "normal"});
-    CodeMirror.Vim.mapCommand("zR", "action", "unfoldAll", {}, {context: "normal"});
+    CodeMirror.Vim.mapCommand(
+      "zc",
+      "action",
+      "fold",
+      {},
+      { context: "normal" }
+    );
+    CodeMirror.Vim.mapCommand(
+      "zM",
+      "action",
+      "foldAll",
+      {},
+      { context: "normal" }
+    );
+    CodeMirror.Vim.mapCommand(
+      "zo",
+      "action",
+      "unfold",
+      {},
+      { context: "normal" }
+    );
+    CodeMirror.Vim.mapCommand(
+      "zR",
+      "action",
+      "unfoldAll",
+      {},
+      { context: "normal" }
+    );
     const codeMirror = CodeMirror.fromTextArea(
       document.getElementById("editor"),
       {
@@ -145,7 +169,9 @@ class Preview extends React.Component {
   }
 
   render() {
-    if (this.state.mode === "markmap") { return <svg id="markmap" />; } else {
+    if (this.state.mode === "markmap") {
+      return <svg id="markmap" />;
+    } else {
       return <div dangerouslySetInnerHTML={this.previewHtml.bind(this)()} />;
     }
   }
@@ -219,9 +245,11 @@ class App extends React.Component {
     return (
       <>
         <div id="header">
-          <a class="title" href={FILE_URL} target="_blank">{this.state.title}</a>
+          <a class="title" href={FILE_URL} target="_blank">
+            {this.state.title}
+          </a>
           <span class="saved-at">
-            saved at: {this.state.savedAt.toLocaleString()}
+            Last saved at: {this.state.savedAt.toLocaleString()}
           </span>
         </div>
         <div id="app-container">
