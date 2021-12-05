@@ -3,12 +3,12 @@ function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
   if(googleDriveFileId == null) {
     const fileName = "gas-markdown-" + (new Date().toLocaleString()).replaceAll(/\/|\ |:/g, "")  + ".md";
     const file = DriveApp.createFile(fileName, "", "text/markdown");
-    const template = HtmlService.createTemplateFromFile("_new_file_created");
+    const template = HtmlService.createTemplateFromFile("public/new_file_created");
     template.file = file;
     template.editorUrl = ScriptApp.getService().getUrl() + "?id=" + file.getId();
     return setOutputOption(template.evaluate());
   }
-  const template = HtmlService.createTemplateFromFile("_index");
+  const template = HtmlService.createTemplateFromFile("public/index");
   const file = DriveApp.getFileById(googleDriveFileId);
   template.config = JSON.stringify({
     fileId: e.parameter["id"],
@@ -17,10 +17,6 @@ function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
     readOnly: e.parameter["ro"],
   })
   return setOutputOption(template.evaluate());
-}
-
-function redirect() {
-
 }
 
 function getMarkdownTextFromfile(id: string) {

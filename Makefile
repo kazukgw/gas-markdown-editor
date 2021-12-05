@@ -5,13 +5,18 @@ help: ## show this
 login: ## clasp login
 	npx clasp login --no-localhost
 
-build:
-	cp src/*.html dist/
+clean: ## clean dist folder
+	rm -rf dist/public
+	rm -f dist/*.ts
+	mkdir -p dist/public
+
+build: clean ## clean and build
 	cp src/*.ts dist/
-	cp src/_css.css dist/_css.html
-	echo "<script>" > dist/_js_main.html
-	npx esbuild ./src/_js_main.jsx --bundle --minify --target=esnext >> dist/_js_main.html
-	echo "</script>" >> dist/_js_main.html
+	cp src/public/*.html dist/public/
+	cp src/public/css.css dist/public/css.html
+	echo "<script>" > dist/public/main.js.html
+	npx esbuild ./src/public/main.jsx --bundle --minify --target=esnext >> dist/public/main.js.html
+	echo "</script>" >> dist/public/main.js.html
 
 push: ## clasp push
 	npx clasp push
