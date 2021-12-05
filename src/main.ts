@@ -14,6 +14,7 @@ function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
     fileId: e.parameter["id"],
     fileName: file.getName(),
     fileUrl: file.getUrl(),
+    readOnly: e.parameter["ro"],
   })
   return setOutputOption(template.evaluate());
 }

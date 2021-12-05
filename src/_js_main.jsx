@@ -10,9 +10,11 @@ const { Markmap, loadCSS, loadJS } = markmap;
 
 const GS = google.script;
 const CONFIG = JSON.parse(document.getElementById("config").textContent);
+console.log("config = " + JSON.stringify(CONFIG));
 const FILE_ID = CONFIG["fileId"];
 const FILE_NAME = CONFIG["fileName"];
 const FILE_URL = CONFIG["fileUrl"];
+const READ_ONLY = CONFIG["readOnly"] === "true";
 
 class Editor extends React.Component {
   constructor(props) {
@@ -83,7 +85,7 @@ class Editor extends React.Component {
 
   render() {
     return (
-      <div id="editor-wrapper">
+      <div id="editor-wrapper" class={READ_ONLY ? "hidden" : ""}>
         <textarea id="editor"></textarea>
       </div>
     );
@@ -141,9 +143,7 @@ class Preview extends React.Component {
   }
 
   render() {
-    if (this.state.mode === "markmap") {
-      return <svg id="markmap" />;
-    } else {
+    if (this.state.mode === "markmap") { return <svg id="markmap" />; } else {
       return <div dangerouslySetInnerHTML={this.previewHtml.bind(this)()} />;
     }
   }
@@ -215,16 +215,18 @@ class App extends React.Component {
 
   render() {
     return (
-      <div id="app-container">
+      <>
         <div id="header">
-          <span class="title">{this.state.title}</span>
+          <a class="title" href={FILE_URL} target="_blank">{this.state.title}</a>
           <span class="saved-at">
             saved at: {this.state.savedAt.toLocaleString()}
           </span>
         </div>
-        <Editor onChangeContent={this.changeContent.bind(this)} />
-        <Preview content={this.state.content} />
-      </div>
+        <div id="app-container">
+          <Editor onChangeContent={this.changeContent.bind(this)} />
+          <Preview content={this.state.content} />
+        </div>
+      </>
     );
   }
 }
