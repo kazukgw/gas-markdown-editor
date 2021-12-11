@@ -20,6 +20,3 @@ build: clean ## clean and build
 
 push: ## clasp push
 	npx clasp push
-
-build-push: build push ## build and push
-

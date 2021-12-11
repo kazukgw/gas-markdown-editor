@@ -17,6 +17,7 @@ const FILE_ID = CONFIG["fileId"];
 const FILE_NAME = CONFIG["fileName"];
 const FILE_URL = CONFIG["fileUrl"];
 const READ_ONLY = CONFIG["readOnly"] === "true";
+var FILE_LAST_SAVED_AT = CONFIG["fileLastUpdated"];
 
 class Editor extends React.Component {
   constructor(props) {
@@ -191,13 +192,14 @@ const saveAsMarkdownFile = (function () {
       GS.run
         .withSuccessHandler((_) => {
           console.log("save: " + FILE_ID);
+          FILE_LAST_SAVED_AT = new Date().getTime();
           callback();
         })
         .withFailureHandler((ret) => {
           console.log(ret);
           alert(ret);
         })
-        .saveAsMarkdownFile(FILE_ID, content);
+        .saveAsMarkdownFile(FILE_ID, content, FILE_LAST_SAVED_AT);
       time = Date.now();
     } else {
       clearTimeout(debounceTimer);
@@ -206,13 +208,14 @@ const saveAsMarkdownFile = (function () {
         GS.run
           .withSuccessHandler((_) => {
             console.log("save: " + FILE_ID);
+            FILE_LAST_SAVED_AT = new Date().getTime();
             callback();
           })
           .withFailureHandler((ret) => {
             console.log(ret);
             alert(ret);
           })
-          .saveAsMarkdownFile(FILE_ID, content);
+          .saveAsMarkdownFile(FILE_ID, content, FILE_LAST_SAVED_AT);
       }, interval - lag + debounceDelay);
     }
   };
