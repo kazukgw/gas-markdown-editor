@@ -192,7 +192,7 @@ const saveAsMarkdownFile = (function () {
       GS.run
         .withSuccessHandler((_) => {
           console.log("save: " + FILE_ID);
-          FILE_LAST_SAVED_AT = new Date().getTime();
+          FILE_LAST_SAVED_AT = new Date().getTime() + 1;
           callback();
         })
         .withFailureHandler((ret) => {
@@ -208,7 +208,7 @@ const saveAsMarkdownFile = (function () {
         GS.run
           .withSuccessHandler((_) => {
             console.log("save: " + FILE_ID);
-            FILE_LAST_SAVED_AT = new Date().getTime();
+            FILE_LAST_SAVED_AT = new Date().getTime() + 1;
             callback();
           })
           .withFailureHandler((ret) => {
