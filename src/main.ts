@@ -16,11 +16,11 @@ function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
   }
   const template = HtmlService.createTemplateFromFile("public/index");
   const file = DriveApp.getFileById(googleDriveFileId);
+  const fileId = file.getId();
   const sessionId = Utilities.getUuid();
-  const userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty("sessionId", sessionId);
+  setSessionId(fileId, sessionId);
   template.config = JSON.stringify({
-    fileId: e.parameter["id"],
+    fileId: fileId,
     fileName: file.getName(),
     fileUrl: file.getUrl(),
     fileLastUpdated: file.getLastUpdated().getTime(),
@@ -42,12 +42,29 @@ function saveAsMarkdownFile(
   content: string,
   currentSessionId: string
 ) {
-  const userProperties = PropertiesService.getUserProperties();
-  const sessionId = userProperties.getProperty("sessionId");
+  const sessionId = getSessionId(id);
   if (sessionId !== currentSessionId) {
     throw new Error("別のセッションとしてファイルを保存しようとしています");
   }
   console.log("saveAsMarkdownFile: " + id);
   const file = DriveApp.getFileById(id);
   file.setContent(content);
+}
+
+function resetSessionId() {
+  const userProperties = PropertiesService.getUserProperties();
+  userProperties.setProperty("sessionId", "{}");
+}
+
+function setSessionId(id: string, sessId: string) {
+  const userProperties = PropertiesService.getUserProperties();
+  const sessionId = JSON.parse(userProperties.getProperty("sessionId"));
+  sessionId[id] =  sessId;
+  userProperties.setProperty("sessionId", JSON.stringify(sessionId))
+}
+
+function getSessionId(id: string): string {
+  const userProperties = PropertiesService.getUserProperties();
+  const sessionId = JSON.parse(userProperties.getProperty("sessionId"));
+  return sessionId[id];
 }
