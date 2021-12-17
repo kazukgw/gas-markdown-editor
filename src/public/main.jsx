@@ -126,7 +126,7 @@ class Editor extends React.Component {
 }
 
 const renderMarkmap = (function () {
-  var interval = 1000;
+  var interval = 2000;
   var time = Date.now(),
     lag,
     debounceTimer,
@@ -190,7 +190,7 @@ class Preview extends React.Component {
 }
 
 const saveAsMarkdownFile = (function () {
-  var interval = 7000;
+  var interval = 10000;
   var time = Date.now(),
     lag,
     debounceTimer,
