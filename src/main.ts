@@ -25,6 +25,8 @@ function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
     fileUrl: file.getUrl(),
     fileLastUpdated: file.getLastUpdated().getTime(),
     readOnly: e.parameter["ro"],
+    editorKeyMap: e.parameter["editorKeyMap"],
+    viewer: e.parameter["viewer"],
     sessionId: sessionId,
   });
   return setOutputOption(template.evaluate());

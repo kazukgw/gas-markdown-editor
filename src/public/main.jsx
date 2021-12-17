@@ -12,7 +12,6 @@ const { Markmap, loadCSS, loadJS } = markmap;
 
 const GS = google.script;
 const CONFIG = JSON.parse(document.getElementById("config").textContent);
-console.log("config = " + JSON.stringify(CONFIG));
 const FILE_ID = CONFIG["fileId"];
 const FILE_NAME = CONFIG["fileName"];
 const FILE_URL = CONFIG["fileUrl"];
@@ -68,22 +67,28 @@ class Editor extends React.Component {
       {},
       { context: "normal" }
     );
+
+    const options = {
+      lineWrapping: true,
+      lineNumbers: true,
+      mode: "text/x-markdown",
+      matchBrackets: true,
+      showCursorWhenSelecting: true,
+      theme: "monokai",
+      showTrailingSpace: true,
+      styleActiveLine: true,
+      foldGutter: true,
+      gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+      scrollbarStyle: "overlay",
+    };
+
+    if (CONFIG["editorKeyMap"] === "vim") {
+      options["keyMap"] = "vim";
+    }
+
     const codeMirror = CodeMirror.fromTextArea(
       document.getElementById("editor"),
-      {
-        lineWrapping: true,
-        lineNumbers: true,
-        mode: "text/x-markdown",
-        keyMap: "vim",
-        matchBrackets: true,
-        showCursorWhenSelecting: true,
-        theme: "monokai",
-        showTrailingSpace: true,
-        styleActiveLine: true,
-        foldGutter: true,
-        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-        scrollbarStyle: "overlay",
-      }
+      options
     );
     codeMirror.on("change", this.handleCodeMirrorChange.bind(this));
     this.setState({ codeMirror: codeMirror });
@@ -149,7 +154,8 @@ class Preview extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { mode: "markmap", markmap: null };
+    this.state = { markmap: null };
+    this.state["mode"] = CONFIG["viewer"] === "markmap" ? "markmap" : "";
   }
 
   previewHtml() {
@@ -157,24 +163,28 @@ class Preview extends React.Component {
   }
 
   componentDidMount() {
-    const { root, features } = transformer.transform(this.props.content || "");
-    const { styles, scripts } = transformer.getUsedAssets(features);
+    if(this.state.mode === "markmap") {
+      const { root, features } = transformer.transform(this.props.content || "");
+      const { styles, scripts } = transformer.getUsedAssets(features);
 
-    if (styles) loadCSS(styles);
-    if (scripts) loadJS(scripts, { getMarkmap: () => markmap });
-    const mm = Markmap.create("#markmap", null, root);
-    this.setState({ markmap: mm });
+      if (styles) loadCSS(styles);
+      if (scripts) loadJS(scripts, { getMarkmap: () => markmap });
+      const mm = Markmap.create("#markmap", null, root);
+      this.setState({ markmap: mm });
+    }
   }
 
   componentDidUpdate() {
-    renderMarkmap(this.state.markmap, this.props.content);
+    if(this.state.mode === "markmap") {
+      renderMarkmap(this.state.markmap, this.props.content);
+    }
   }
 
   render() {
     if (this.state.mode === "markmap") {
       return <svg id="markmap" />;
     } else {
-      return <div dangerouslySetInnerHTML={this.previewHtml.bind(this)()} />;
+      return <div id="marked" class="markdown-body" dangerouslySetInnerHTML={this.previewHtml.bind(this)()} />;
     }
   }
 }
