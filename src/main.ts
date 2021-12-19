@@ -12,7 +12,7 @@ function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
     template.file = file;
     template.editorUrl =
       ScriptApp.getService().getUrl() + "?id=" + file.getId();
-    return setOutputOption(template.evaluate());
+    return setOutputOption(template.evaluate(), "Create New File");
   }
   const template = HtmlService.createTemplateFromFile("public/index");
   const file = DriveApp.getFileById(googleDriveFileId);
@@ -29,7 +29,7 @@ function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
     viewer: e.parameter["viewer"],
     sessionId: sessionId,
   });
-  return setOutputOption(template.evaluate());
+  return setOutputOption(template.evaluate(), file.getName());
 }
 
 function getMarkdownTextFromfile(id: string) {
