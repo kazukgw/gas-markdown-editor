@@ -43,7 +43,7 @@
   :global(p), :global(ul), :global(ol) {
     color: rgb(51, 51, 50);
     margin: 0;
-    margin-bottom: 30px;
+    margin-bottom: 6px;
     line-height: 1.5;
     letter-spacing: -0.02em;
   }
@@ -90,6 +90,11 @@
     background-color: rgb(245, 245, 245);
   }
 
+  :global(code) {
+    background-color: rgb(245, 245, 245);
+    padding: 0 4px;
+  }
+
   :global(img) {
     display: block;
     max-width: 100%;
@@ -111,6 +116,20 @@
     color: #666665;
     font-style: italic;
     font-size: 14px;
+  }
+
+  :global(table) {
+    border-collapse: collapse;
+    border: 1px solid #CCC;
+  }
+
+  :global(th), :global(td) {
+    padding: 5px 10px;
+    border: 1px solid #CCC;
+  }
+
+  :global(th) {
+    background: #EEE;
   }
 
   :global(hr) {
