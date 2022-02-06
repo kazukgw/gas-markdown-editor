@@ -23,10 +23,10 @@ function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
     fileId: fileId,
     fileName: file.getName(),
     fileUrl: file.getUrl(),
-    fileLastUpdated: file.getLastUpdated().getTime(),
-    readOnly: e.parameter["ro"],
-    editorKeyMap: e.parameter["editorKeyMap"],
-    viewer: e.parameter["viewer"],
+    fileSavedAt: file.getLastUpdated().getTime(),
+    mode: e.parameter["mode"] || "",
+    editorKeymap: e.parameter["editorKeymap"] || "",
+    viewerType: e.parameter["viewerType"] || "",
     sessionId: sessionId,
   });
   return setOutputOption(template.evaluate(), file.getName());
@@ -58,9 +58,9 @@ function resetSessionId() {
 
 function setSessionId(id: string, sessId: string) {
   const userProperties = PropertiesService.getUserProperties();
-  const sessionId = JSON.parse(userProperties.getProperty("sessionId"));
-  sessionId[id] =  sessId;
-  userProperties.setProperty("sessionId", JSON.stringify(sessionId))
+  const sessionId = JSON.parse(userProperties.getProperty("sessionId") || "{}");
+  sessionId[id] = sessId;
+  userProperties.setProperty("sessionId", JSON.stringify(sessionId));
 }
 
 function getSessionId(id: string): string {
