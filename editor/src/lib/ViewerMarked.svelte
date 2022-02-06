@@ -39,6 +39,7 @@
   padding: 5px 30px 0 40px;
   overflow: scroll;
   background-color: white;
+  margin-bottom: 200px;
 
   :global(p), :global(ul), :global(ol) {
     color: rgb(51, 51, 50);
