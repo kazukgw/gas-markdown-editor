@@ -63,11 +63,11 @@
   }
 
   :global(h1) {
-    font-size: 30px;
+    font-size: 33px;
   }
 
   :global(h2) {
-    font-size: 24px;
+    font-size: 27px;
   }
 
   :global(blockquote) {
