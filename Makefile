@@ -20,9 +20,6 @@ build: clean ## clean and build
 	@cp src/public/assets.html dist/public/
 	@cp src/public/js_assets.html dist/public/
 	@cp src/public/new_file_created.html dist/public/
-	@echo "<style>" > dist/public/css.css.html
-	@cat src/public/css.css >> dist/public/css.css.html
-	@echo "</style>" >> dist/public/css.css.html
 
 	@echo "<style>" > dist/public/index.css.html
 	@cat editor/dist/assets/index.*.css >> dist/public/index.css.html
