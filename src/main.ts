@@ -1,32 +1,37 @@
 function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
-  const googleDriveFileId = e.parameter["id"];
-  if (googleDriveFileId == null) {
-    const fileName =
-      "gas-markdown-" +
-      new Date().toLocaleString().replaceAll(/\/|\ |:/g, "") +
-      ".md";
-    const file = DriveApp.createFile(fileName, "", "text/markdown");
-    const template = HtmlService.createTemplateFromFile(
-      "public/new_file_created"
-    );
-    template.file = file;
-    template.editorUrl =
-      ScriptApp.getService().getUrl() + "?id=" + file.getId();
-    return setOutputOption(template.evaluate(), "Create New File");
+  if (e.parameter["createNewFile"] != null) {
+    return createAndShowNewFileCreatedPage();
   }
-  const template = HtmlService.createTemplateFromFile("public/index");
-  const file = DriveApp.getFileById(googleDriveFileId);
-  const fileId = file.getId();
+
+  let fileId = e.parameter["id"];
+  let mode = e.parameter["mode"] || "";
+  let viewerType = e.parameter["viewerType"] || "";
+  if (fileId == null) {
+    fileId = getIndexPageFileId();
+    mode = "viewer";
+    viewerType = "marked";
+  }
+  let editorKeymap = e.parameter["editorKeymap"] || "";
+
+
+  // 閲覧モードの場合に編集中のセッションの session ID を 上書きされると面倒なので
+  // mode === viewer の場合は session id をセットしない。
   const sessionId = Utilities.getUuid();
-  setSessionId(fileId, sessionId);
+  if(mode !== "viewer") {
+    EditorSession.set(fileId, sessionId);
+  }
+
+  const template = HtmlService.createTemplateFromFile("public/index");
+  const file = DriveApp.getFileById(fileId);
+
   template.config = JSON.stringify({
     fileId: fileId,
     fileName: file.getName(),
     fileUrl: file.getUrl(),
     fileSavedAt: file.getLastUpdated().getTime(),
-    mode: e.parameter["mode"] || "",
-    editorKeymap: e.parameter["editorKeymap"] || "",
-    viewerType: e.parameter["viewerType"] || "",
+    mode: mode,
+    editorKeymap: editorKeymap,
+    viewerType: viewerType,
     sessionId: sessionId,
   });
   return setOutputOption(template.evaluate(), file.getName());
@@ -42,7 +47,7 @@ function saveAsMarkdownFile(
   content: string,
   currentSessionId: string
 ) {
-  const sessionId = getSessionId(id);
+  const sessionId = EditorSession.get(id);
   if (sessionId !== currentSessionId) {
     throw new Error("別のセッションとしてファイルを保存しようとしています");
   }
@@ -51,20 +56,24 @@ function saveAsMarkdownFile(
   file.setContent(content);
 }
 
-function resetSessionId() {
-  const userProperties = PropertiesService.getUserProperties();
-  userProperties.setProperty("sessionId", "{}");
+function getIndexPageFileId() {
+  const scriptProps = PropertiesService.getScriptProperties();
+  return scriptProps.getProperty("IndexPageFileId");
 }
 
-function setSessionId(id: string, sessId: string) {
-  const userProperties = PropertiesService.getUserProperties();
-  const sessionId = JSON.parse(userProperties.getProperty("sessionId") || "{}");
-  sessionId[id] = sessId;
-  userProperties.setProperty("sessionId", JSON.stringify(sessionId));
+function setIndexPageFileId() {
+  const scriptProps = PropertiesService.getScriptProperties();
+  scriptProps.setProperty("IndexPageFileId", "");
 }
 
-function getSessionId(id: string): string {
-  const userProperties = PropertiesService.getUserProperties();
-  const sessionId = JSON.parse(userProperties.getProperty("sessionId"));
-  return sessionId[id];
+function createAndShowNewFileCreatedPage() {
+  const _t = new Date().toLocaleString().replaceAll(/\/|\ |:/g, "");
+  const fileName = `gas-markdown-${_t}.md`;
+  const file = DriveApp.createFile(fileName, "", "text/markdown");
+  const template = HtmlService.createTemplateFromFile(
+    "public/new_file_created"
+  );
+  template.file = file;
+  template.editorUrl = ScriptApp.getService().getUrl() + "?id=" + file.getId();
+  return setOutputOption(template.evaluate(), "Create New File");
 }

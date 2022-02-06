@@ -13,6 +13,11 @@
 
   const content = writable("");
 
+  let fileId = config.fileId;
+  if(config.indexPageFileId) {
+    fileId = config.indexPageFileId;
+  }
+
   let editorComponent;
   let fileSavedAt = config.fileSavedAt;
 
@@ -29,13 +34,13 @@
   function onEditorChange(event) {
     const editorValueText = event.detail;
     content.set(editorValueText);
-    saveAsMarkdownFile(config.fileId, editorValueText, config.sessionId).then(()=>{
+    saveAsMarkdownFile(fileId, editorValueText, config.sessionId).then(()=>{
       fileSavedAt = new Date();
     });
   }
 
   onMount(()=>{
-    loadContent(config.fileId).then((_content)=>{
+    loadContent(fileId).then((_content)=>{
       if(editorComponent != null) {
         editorComponent.setup(_content);
       }

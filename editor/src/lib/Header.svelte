@@ -11,7 +11,7 @@
     {fileName}
   </a>
   <span class="saved-at">
-    Saved at: {fileSavedAt.toLocaleString()}
+    Last modified: {fileSavedAt.toLocaleString()}
   </span>
 </div>
 
