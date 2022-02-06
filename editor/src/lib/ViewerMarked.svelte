@@ -23,6 +23,7 @@
   width: 100%;
   height: 100%;
   overflow: scroll;
+  overflow-wrap: break-word;
 }
 
 .marked-content-center {

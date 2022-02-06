@@ -113,6 +113,7 @@ main {
 
 .half-column {
   flex: 50%;
+  width: 50%;
   height: 100%;
 }
 </style>
