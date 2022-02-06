@@ -69,24 +69,20 @@
   let codemirror;
 
   onMount(()=>{
-    console.log("editor onmount: create codemirror instance");
     codemirror = CodeMirror.fromTextArea(
       document.getElementById("editor"),
       options
     );
-    console.log("editor onmount: attach change event ");
     codemirror.on("change", ()=>{
       dispatch('editorChange', codemirror.getValue());
     });
 
-    console.log("editor onmount: setoption extraKeys");
     codemirror.setOption("extraKeys", {
       Tab: function (cm) {
         var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
         cm.replaceSelection(spaces);
       },
     });
-    console.log("editor onmount: finished");
   })
 
   export function setup(content){

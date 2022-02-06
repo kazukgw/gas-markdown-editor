@@ -23,7 +23,6 @@ export class Config {
   constructor(elem: HTMLElement) {
     this.data = JSON.parse(elem.innerText);
 
-    console.log("----> config data");
     console.log(this.data);
 
     const _mode = this.data["mode"].toLowerCase();

@@ -5,7 +5,6 @@
 
   let innerHtml = "";
   content.subscribe((value)=>{
-    console.log("svelte store sbuscribe: content");
     innerHtml = marked.parse(value || "");
   });
 

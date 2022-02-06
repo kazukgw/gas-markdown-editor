@@ -12,7 +12,6 @@
   let mm;
 
   onMount(()=>{
-    console.log("viewer markmap onbuild: start");
 
     const { root, features } = transformer.transform("");
     const { styles, scripts } = transformer.getUsedAssets(features);
@@ -20,7 +19,6 @@
     if (styles) loadCSS(styles);
     if (scripts) loadJS(scripts, { getMarkmap: () => markmap });
     mm = Markmap.create("#markmap", null, root);
-    console.log("viewer markmap onbuild: finish");
   });
 
   const renderMarkmap = (function () {
@@ -50,7 +48,6 @@
     if(mm == null) {
       return;
     }
-    console.log("svelte store sbuscribe: content");
     renderMarkmap(mm, value);
   });
 </script>
