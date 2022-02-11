@@ -6,6 +6,8 @@ function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
   let fileId = e.parameter["id"];
   let mode = e.parameter["mode"] || "";
   let viewerType = e.parameter["viewerType"] || "";
+  // fileId が存在しない場合は Index Page として登録されたものを指定する。
+  // Index Page の値は Script Property として設定する。
   if (fileId == null) {
     fileId = getIndexPageFileId();
     mode = "viewer";
