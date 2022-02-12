@@ -1,21 +1,24 @@
-const EditorSession: Object = {
-  reset: () => {
+class EditorSession {
+  static reset() {
     const userProperties = PropertiesService.getUserProperties();
     userProperties.setProperty("sessionId", "{}");
-  },
+  }
 
-  set: (id: string, sessId: string) => {
+  static set(config: Config): Config {
+    const sessId = Utilities.getUuid();
     const userProperties = PropertiesService.getUserProperties();
-    const sessionId = JSON.parse(
+    const sessionIdMap = JSON.parse(
       userProperties.getProperty("sessionId") || "{}"
     );
-    sessionId[id] = sessId;
-    userProperties.setProperty("sessionId", JSON.stringify(sessionId));
-  },
+    sessionIdMap[config.fileId] = sessId;
+    userProperties.setProperty("sessionId", JSON.stringify(sessionIdMap));
+    config.sessionId = sessId;
+    return config;
+  }
 
-  get: (id: string): string => {
+  static get(fileId: string): string {
     const userProperties = PropertiesService.getUserProperties();
     const sessionId = JSON.parse(userProperties.getProperty("sessionId"));
-    return sessionId[id];
-  },
-};
+    return sessionId[fileId];
+  }
+}

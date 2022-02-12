@@ -2,9 +2,10 @@
 <html>
   <head>
     <title>GAS Markdown Editor</title>
+    <?!= includeHtml('public/index.css') ?>
   </head>
   <body>
-    <div style='margin: 20px; font-family: "Noto Sans Mono", "Noto Sans JP", monospace, sans-serif;'>
+    <div class="markdown" style="width: 60%; margin:0 auto">
       <h1>新しいファイルを作成しました</h1>
       <div>
         <a target="_blank" href="<?!= editorUrl ?>"> <?!= editorUrl ?></a>

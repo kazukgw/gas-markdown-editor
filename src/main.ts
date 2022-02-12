@@ -1,42 +1,27 @@
 function doGet(e: GoogleAppsScript.Events.AppsScriptHttpRequestEvent) {
-  if (e.parameter["createNewFile"] != null) {
+  const config = new Config(e);
+
+  return showPageWithConfig(config)
+}
+
+function showPageWithConfig(config: Config) {
+  if(config.error != null) {
+    const template = HtmlService.createTemplateFromFile("public/error");
+    template.errorMessage = config.errorMessage;
+    return setOutputOption(template.evaluate(), "Error");
+  }
+
+  if(config.page === PageType.create) {
     return createAndShowNewFileCreatedPage();
   }
 
-  let fileId = e.parameter["id"];
-  let mode = e.parameter["mode"] || "";
-  let viewerType = e.parameter["viewerType"] || "";
-  // fileId が存在しない場合は Index Page として登録されたものを指定する。
-  // Index Page の値は Script Property として設定する。
-  if (fileId == null) {
-    fileId = getIndexPageFileId();
-    mode = "viewer";
-    viewerType = "marked";
-  }
-  let editorKeymap = e.parameter["editorKeymap"] || "";
-
-
-  // 閲覧モードの場合に編集中のセッションの session ID を 上書きされると面倒なので
-  // mode === viewer の場合は session id をセットしない。
-  const sessionId = Utilities.getUuid();
-  if(mode !== "viewer") {
-    EditorSession.set(fileId, sessionId);
+  if(config.page === PageType.normal) {
+    config = EditorSession.set(config);
   }
 
   const template = HtmlService.createTemplateFromFile("public/index");
-  const file = DriveApp.getFileById(fileId);
-
-  template.config = JSON.stringify({
-    fileId: fileId,
-    fileName: file.getName(),
-    fileUrl: file.getUrl(),
-    fileSavedAt: file.getLastUpdated().getTime(),
-    mode: mode,
-    editorKeymap: editorKeymap,
-    viewerType: viewerType,
-    sessionId: sessionId,
-  });
-  return setOutputOption(template.evaluate(), file.getName());
+  template.config = config.toJSON();
+  return setOutputOption(template.evaluate(), config.fileName);
 }
 
 function getMarkdownTextFromfile(id: string) {
@@ -58,16 +43,6 @@ function saveAsMarkdownFile(
   file.setContent(content);
 }
 
-function getIndexPageFileId() {
-  const scriptProps = PropertiesService.getScriptProperties();
-  return scriptProps.getProperty("IndexPageFileId");
-}
-
-function setIndexPageFileId() {
-  const scriptProps = PropertiesService.getScriptProperties();
-  scriptProps.setProperty("IndexPageFileId", "");
-}
-
 function createAndShowNewFileCreatedPage() {
   const _t = new Date().toLocaleString().replaceAll(/\/|\ |:/g, "");
   const fileName = `gas-markdown-${_t}.md`;
@@ -78,4 +53,62 @@ function createAndShowNewFileCreatedPage() {
   template.file = file;
   template.editorUrl = ScriptApp.getService().getUrl() + "?id=" + file.getId();
   return setOutputOption(template.evaluate(), "Create New File");
+}
+
+function getRecentlyModifiedFiles(): Object[] {
+  const d = new Date()
+  d.setFullYear(d.getFullYear() - 1);
+  const query = `mimeType = "text/markdown" and modifiedDate >="${d.toJSON().slice(0, -5)}"`;
+  const fileIterator = DriveApp.searchFiles(query);
+  let file: GoogleAppsScript.Drive.File;
+  let count: number = 0;
+  const results: Object[] = [];
+  while(fileIterator.hasNext() && count < 20) {
+    file = fileIterator.next();
+    let folder;
+    const folderIterator = file.getParents();
+    if(folderIterator.hasNext()) {
+      folder = folderIterator.next();
+    }
+    results.push({
+      id: file.getId(),
+      name: file.getName(),
+      url: file.getUrl(),
+      lastModified: file.getLastUpdated().getTime(),
+      parents: folder.getName(),
+    });
+    count++;
+  }
+  return results;
+}
+
+function searchFiles(searchValue: string): Object[] {
+  const query = `mimeType = "text/markdown" and title contains '${searchValue}'`;
+  const fileIterator = DriveApp.searchFiles(query);
+  let file: GoogleAppsScript.Drive.File;
+  let count: number = 0;
+  const results: Object[] = [];
+  while(fileIterator.hasNext() && count < 20) {
+    file = fileIterator.next();
+    let folder;
+    const folderIterator = file.getParents();
+    if(folderIterator.hasNext()) {
+      folder = folderIterator.next();
+    }
+    results.push({
+      id: file.getId(),
+      name: file.getName(),
+      url: file.getUrl(),
+      lastModified: file.getLastUpdated().getTime(),
+      parents: folder.getName(),
+    });
+    count++;
+  }
+  return results;
+
+}
+
+function changeFileName(fileId: string, fileName: string) {
+  const file = DriveApp.getFileById(fileId);
+  file.setName(fileName)
 }

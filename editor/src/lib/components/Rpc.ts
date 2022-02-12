@@ -1,5 +1,50 @@
 const GS = window["google"]["script"];
 
+export function changeFileName(fileId: string, fileName: string) {
+  return new Promise((res, rej) => {
+    GS.run
+      .withSuccessHandler((ret) => {
+        res(ret);
+      })
+      .withFailureHandler((ret) => {
+        console.log(ret);
+        alert(ret);
+        rej();
+      })
+      .changeFileName(fileId, fileName);
+  });
+}
+
+export function searchFiles(searchValue: string) {
+  return new Promise((res, rej) => {
+    GS.run
+      .withSuccessHandler((ret) => {
+        res(ret);
+      })
+      .withFailureHandler((ret) => {
+        console.log(ret);
+        alert(ret);
+        rej();
+      })
+      .searchFiles(searchValue);
+  });
+}
+
+export function getRecentlyModifiedFiles() {
+  return new Promise((res, rej) => {
+    GS.run
+      .withSuccessHandler((ret) => {
+        res(ret);
+      })
+      .withFailureHandler((ret) => {
+        console.log(ret);
+        alert(ret);
+        rej();
+      })
+      .getRecentlyModifiedFiles();
+  });
+}
+
 export function loadContent(fileId: string) {
   return new Promise((res, rej) => {
     GS.run

@@ -3,8 +3,10 @@
     "lib": [
       "esnext"
     ],
+    "module": "CommonJS",
     "target": "es2019",
     "noImplicitUseStrict": true,
+    "esModuleInterop": true,
     "experimentalDecorators": true,
     "outDir": "dist"
   }
