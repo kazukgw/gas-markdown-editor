@@ -12,7 +12,7 @@
 
 <div id="search" class="markdown">
   <div>
-    <h2>Search</h2>
+    <h2>Search <i class="fas fa-search"></i></h2>
     <div>
       <input type="text" class="search-input" bind:value={searchValue}/>
       <div> <span class="search-button" on:click={dispatch('search', searchValue)}>search!<span> </div>
@@ -25,7 +25,7 @@
     </div>
   </div>
   <div>
-    <h2><a href="{baseUrl + '?page=create'}" target="_blank">Create New File</a></h2>
+    <h2><a href="{baseUrl + '?page=create'}" target="_blank">Create New File<i class="fas fa-external-link-alt"></i></a></h2>
   </div>
   <div>
     <h2>Recently Modified Files</h2>
@@ -65,5 +65,9 @@ input[type="text"] {
 .filename {
   font-weight: bold;
   font-size:16px;
+}
+
+i {
+  padding: 5px;
 }
 </style>
