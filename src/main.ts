@@ -19,9 +19,14 @@ function showPageWithConfig(config: Config) {
     config = EditorSession.set(config);
   }
 
+  let title = config.fileName;
+  if(config.page === PageType.search) {
+    title = "Search"
+  }
+
   const template = HtmlService.createTemplateFromFile("public/index");
   template.config = config.toJSON();
-  return setOutputOption(template.evaluate(), config.fileName);
+  return setOutputOption(template.evaluate(), title);
 }
 
 function getMarkdownTextFromfile(id: string) {
