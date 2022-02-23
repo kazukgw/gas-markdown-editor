@@ -43,7 +43,7 @@ class RequestHandler {
     const output: GoogleAppsScript.HTML.HtmlOutput = template.evaluate();
     output.setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
     output.setSandboxMode(HtmlService.SandboxMode.IFRAME);
-    output.setTitle(config["object"]);
+    output.setTitle(config.title);
 
     return output;
   }

@@ -25,10 +25,10 @@ interface Config {
   fullUrl: string;
   baseUrl: string;
   page: PageType;
+  title: string;
 }
 
 interface DefaultConfig extends Config {
-  title: string;
   fileId?: string;
   mode: Mode;
   editorKeymap: EditorKeymap;
@@ -40,7 +40,6 @@ interface NewFileCreatedPageConfig extends DefaultConfig {
 }
 
 interface IndexPageConfig extends DefaultConfig{
-  title: string;
   fileName: string;
   fileUrl: string;
   fileLastModified: number;
@@ -171,6 +170,7 @@ const SearchPage: Page = {
   htmlFileName: "public/index",
   createPageConfig: (cnf: DefaultConfig): Config => {
     const config = cnf as SearchPageConfig;
+    config.title = "Search";
     return config;
   },
   prepare: (
