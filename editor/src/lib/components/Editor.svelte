@@ -22,6 +22,24 @@
   CodeMirror.Vim.defineAction("unfoldAll", function (cm, _) {
     CodeMirror.commands.unfoldAll(cm);
   });
+  CodeMirror.Vim.defineEx("createNewFile", null, function (cm, params) {
+    console.log(`createNewFile`);
+    console.log(params);
+    const args = params["args"] || [];
+    const fileName = args.shift();
+    let content = "";
+    if(params["line"] != null && params["lineEnd"] != null){
+      content = cm.getRange(
+        {line: params.line, ch:0},
+        {line: params.lineEnd, ch: Infinity}
+      );
+    }
+    console.log("dispatch createNewFileCommand");
+    dispatch('createNewFileCommand', {
+      fileName: fileName,
+      content: content,
+    });
+  });
   CodeMirror.Vim.mapCommand(
     "zc",
     "action",

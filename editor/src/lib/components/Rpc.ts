@@ -1,5 +1,20 @@
 const GS = window["google"]["script"];
 
+export function createNewFile(fileName: string, content: string) {
+  return new Promise((res, rej) => {
+    GS.run
+      .withSuccessHandler((ret) => {
+        res(ret);
+      })
+      .withFailureHandler((ret) => {
+        console.log(ret);
+        alert(ret);
+        rej();
+      })
+      .createNewFile(fileName, content);
+  });
+}
+
 export function changeFileName(fileId: string, fileName: string) {
   return new Promise((res, rej) => {
     GS.run

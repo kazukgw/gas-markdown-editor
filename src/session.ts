@@ -4,16 +4,15 @@ class EditorSession {
     userProperties.setProperty("sessionId", "{}");
   }
 
-  static set(config: Config): Config {
+  static set(fileId: string): string {
     const sessId = Utilities.getUuid();
     const userProperties = PropertiesService.getUserProperties();
     const sessionIdMap = JSON.parse(
       userProperties.getProperty("sessionId") || "{}"
     );
-    sessionIdMap[config.fileId] = sessId;
+    sessionIdMap[fileId] = sessId;
     userProperties.setProperty("sessionId", JSON.stringify(sessionIdMap));
-    config.sessionId = sessId;
-    return config;
+    return sessId;
   }
 
   static get(fileId: string): string {

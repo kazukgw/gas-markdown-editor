@@ -4,6 +4,7 @@
   export let canFileEdit: boolean = false;
   export let fileName: string;
   export let fileUrl: string;
+  export let vimUrl: string;
   export let fileLastModified: string;
 
   let fileNameEditting = false;

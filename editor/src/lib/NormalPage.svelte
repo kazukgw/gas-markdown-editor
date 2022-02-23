@@ -1,10 +1,16 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import { loadContent, saveAsMarkdownFile, changeFileName } from "./components/Rpc.ts";
+  import {
+    loadContent,
+    saveAsMarkdownFile,
+    changeFileName,
+    createNewFile
+  } from "./components/Rpc.ts";
   import {Mode, ViewerType} from "./components/Config.ts";
   import Header from "./components/Header.svelte";
   import Editor from "./components/Editor.svelte";
+  import Modal from "./components/Modal.svelte";
   import ViewerMarked from "./components/ViewerMarked.svelte";
   import ViewerMarkmap from "./components/ViewerMarkmap.svelte";
 
@@ -19,6 +25,7 @@
 
   let editorComponent;
   let fileLastModified = config.fileLastModified;
+  let modalContent;
 
   let Viewer;
   switch(config.viewerType) {
@@ -49,8 +56,27 @@
     });
   }
 
+  function onCreateNewFileCommand(event) {
+    console.log("onCreateNewFileCommand");
+    const o = event.detail;
+    createNewFile(o["fileName"], o["content"]).then((fileInfo)=>{
+      modalContent = `
+        <h2> Sucessfully file created. </h2>
+        <a target="_blank" href="${fileInfo["editorUrl"]}"> ${fileInfo["editorUrl"]}</a>
+        <p> Vim </p>
+        <a target="_blank" href="${fileInfo["editorUrl"] + "&editorKeymap=vim"}"> ${fileInfo["editorUrl"] + "&editorKeymap=vim"}</a>
+      `;
+      console.log(`sucessfully file created: ${fileInfo}`);
+    })
+    .catch((e)=>{
+      console.log("faild to create new file");
+      console.log(e);
+    });
+  }
+
   onMount(()=>{
     console.log("load content");
+
     loadContent(fileId).then((_content)=>{
       if(editorComponent != null) {
         editorComponent.setup(_content);
@@ -71,12 +97,15 @@
     />
   </div>
 
+  <Modal content={modalContent} />
+
   <div id="container">
     {#if config.mode === Mode.editor}
       <Editor
         bind:this={editorComponent}
         config={config}
         on:editorChange={onEditorChange}
+        on:createNewFileCommand={onCreateNewFileCommand}
       />
 
     {:else if config.mode === Mode.viewer}
@@ -88,6 +117,7 @@
           bind:this={editorComponent}
           config={config}
           on:editorChange={onEditorChange}
+          on:createNewFileCommand={onCreateNewFileCommand}
         />
       </div>
 
