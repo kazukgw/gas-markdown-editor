@@ -1,79 +1,66 @@
+import { writable } from "svelte/store";
+
 const GS = window["google"]["script"];
 
-export function createNewFile(fileName: string, content: string) {
+export class RpcResults {
+  functionName: RpcFunctionType;
+  results: any;
+  error: boolean;
+
+  constructor(functionName: RpcFunctionType, results: any, error: boolean) {
+    this.functionName = functionName;
+    this.results = results;
+    this.error = error;
+  }
+}
+
+export enum RpcFunctionType {
+  createNewFile = "createNewFile",
+  changeFileName = "changeFileName",
+  searchFiles = "searchFiles",
+  getRecentlyModifiedFiles = "getRecentlyModifiedFiles",
+  getMarkdownTextFromFile = "getMarkdownTextFromFile",
+  saveAsMarkdownFile = "saveAsMarkdownFile",
+};
+
+export const rpcResultsPub = writable(null);
+
+function rpc(functionName: RpcFunctionType, args: any[]) {
   return new Promise((res, rej) => {
     GS.run
       .withSuccessHandler((ret) => {
-        res(ret);
+        const results = new RpcResults(functionName, ret, false);
+        rpcResultsPub.set(results);
+        res(results);
       })
       .withFailureHandler((ret) => {
-        console.log(ret);
-        alert(ret);
+        const results = new RpcResults(functionName, ret, true);
+        console.log(results);
+        rpcResultsPub.set(results);
         rej();
       })
-      .createNewFile(fileName, content);
+      .rpc(functionName, args);
   });
+}
+
+export function createNewFile(fileName: string, content: string) {
+  return rpc(RpcFunctionType.createNewFile,[fileName, content]);
 }
 
 export function changeFileName(fileId: string, fileName: string) {
-  return new Promise((res, rej) => {
-    GS.run
-      .withSuccessHandler((ret) => {
-        res(ret);
-      })
-      .withFailureHandler((ret) => {
-        console.log(ret);
-        alert(ret);
-        rej();
-      })
-      .changeFileName(fileId, fileName);
-  });
+  return rpc(RpcFunctionType.changeFileName,[fileId, fileName]);
 }
 
 export function searchFiles(searchValue: string) {
-  return new Promise((res, rej) => {
-    GS.run
-      .withSuccessHandler((ret) => {
-        res(ret);
-      })
-      .withFailureHandler((ret) => {
-        console.log(ret);
-        alert(ret);
-        rej();
-      })
-      .searchFiles(searchValue);
-  });
+  return rpc(RpcFunctionType.searchFiles, [searchValue]);
 }
 
 export function getRecentlyModifiedFiles() {
-  return new Promise((res, rej) => {
-    GS.run
-      .withSuccessHandler((ret) => {
-        res(ret);
-      })
-      .withFailureHandler((ret) => {
-        console.log(ret);
-        alert(ret);
-        rej();
-      })
-      .getRecentlyModifiedFiles();
-  });
+  return rpc(RpcFunctionType.getRecentlyModifiedFiles, []);
 }
 
-export function loadContent(fileId: string) {
-  return new Promise((res, rej) => {
-    GS.run
-      .withSuccessHandler((ret) => {
-        console.log("read");
-        res(ret["content"]);
-      })
-      .withFailureHandler((ret) => {
-        console.log(ret);
-        alert(ret);
-        rej();
-      })
-      .getMarkdownTextFromfile(fileId);
-  });
+export function getMarkdownTextFromFile(fileId: string) {
+  return rpc(RpcFunctionType.getMarkdownTextFromFile, [fileId]);
 }
 
 export const saveAsMarkdownFile = (function () {
@@ -85,16 +72,17 @@ export const saveAsMarkdownFile = (function () {
 
   const save = (fileId, content, sessionId, res, rej) => {
     GS.run
-      .withSuccessHandler((_) => {
+      .withSuccessHandler((ret) => {
         console.log("save: " + fileId);
+        rpcResultsPub.set(new RpcResults(RpcFunctionType.saveAsMarkdownFile, ret, false));
         res();
       })
       .withFailureHandler((ret) => {
         console.log(ret);
-        alert(ret);
+        rpcResultsPub.set(new RpcResults(RpcFunctionType.saveAsMarkdownFile, ret, true));
         rej();
       })
-      .saveAsMarkdownFile(fileId, content, sessionId);
+      .rpc(RpcFunctionType.saveAsMarkdownFile, [fileId, content, sessionId]);
   };
 
   return function (fileId: string, content: string, sessionId: string) {

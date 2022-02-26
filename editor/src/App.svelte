@@ -2,17 +2,12 @@
   import {PageType, Mode, ViewerType, Config} from "./lib/components/Config.ts";
 
   import NormalPage from "./lib/NormalPage.svelte";
-  import SearchPage from "./lib/SearchPage.svelte";
 
   let config = new Config(document.getElementById("config"));
 </script>
 
 <main>
-  {#if config.page === PageType.search}
-    <SearchPage config={config} />
-  {:else}
-    <NormalPage config={config} />
-  {/if}
+  <NormalPage config={config} />
 </main>
 
 <style lang="scss">

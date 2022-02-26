@@ -53,7 +53,6 @@ class RequestHandler {
     pages[PageType.create] = NewFileCreatedPage;
     pages[PageType.normal] = NormalPage;
     pages[PageType.index] = IndexPage;
-    pages[PageType.search] = SearchPage;
 
     const page = pages[pageType];
     if(page == null) {

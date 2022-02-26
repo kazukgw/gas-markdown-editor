@@ -49,8 +49,6 @@ interface NormalPageConfig extends IndexPageConfig {
   sessionId: string;
 }
 
-interface SearchPageConfig extends DefaultConfig{}
-
 
 function createDefaultConfig(
   event: GoogleAppsScript.Events.AppsScriptHttpRequestEvent,
@@ -164,18 +162,3 @@ const IndexPage: Page = {
     config: Config
   ): [GoogleAppsScript.HTML.HtmlTemplate, Config] => { return [template, config] },
 };
-
-const SearchPage: Page = {
-  type: PageType.search,
-  htmlFileName: "public/index",
-  createPageConfig: (cnf: DefaultConfig): Config => {
-    const config = cnf as SearchPageConfig;
-    config.title = "Search";
-    return config;
-  },
-  prepare: (
-    template: GoogleAppsScript.HTML.HtmlTemplate,
-    config: Config
-  ): [GoogleAppsScript.HTML.HtmlTemplate, Config] => { return [template, config] },
-};
-

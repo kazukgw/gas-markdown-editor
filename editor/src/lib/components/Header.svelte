@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import { changeFileNameEventPub, ChangeFileNameEvent } from "./Event.ts";
 
   export let canFileEdit: boolean = false;
   export let fileName: string;
@@ -10,9 +10,19 @@
   let fileNameEditting = false;
   let newFileName = fileName;
 
-  const dispatch = createEventDispatcher();
-  function changeFileName() {
+  function startChangeFileName() {
     fileNameEditting = true;
+  }
+
+  function changeFileName() {
+    if(newFileName === "") {
+      newFileName = fileName;
+      return;
+    }
+    fileNameEditting = false;
+    fileName = newFileName;
+
+    changeFileNameEventPub.set(new ChangeFileNameEvent(newFileName));
   }
 
 </script>
@@ -28,19 +38,11 @@
         class="file-name"
         type="text"
         bind:value={newFileName}
-        on:change={()=>{
-          if(newFileName === "") {
-            newFileName = fileName;
-            return;
-          }
-          fileNameEditting = false;
-          fileName = newFileName;
-          dispatch('changeFileName', newFileName);
-        }}
+        on:change={changeFileName}
         on:focusout={()=>{fileNameEditting = false}}
       />
     {:else}
-      <span class="file-name" on:click={changeFileName}>
+      <span class="file-name" on:click={startChangeFileName}>
         {fileName}
       </span>
     {/if}

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@tsconfig/svelte": "^3.0.0",
     "@types/google-apps-script": "~1.0.11"
   },
   "scripts": {},

@@ -21,8 +21,9 @@
 
 <style lang="scss">
 #modal {
-  --width: 50%;
+  --width: 40%;
   --height: 30%;
+  min-height: 250px;
   z-index: 1000;
   position: absolute;
   margin: 0 auto;
@@ -32,12 +33,14 @@
   top: 100px;
   left: calc(50% - var(--width) / 2);
   align-items: center;
-  padding: 8px;
-  border-radius: 4px;
-  border: solid gray 1px;
+  padding: 10px 30px;
+  border: solid 1px #eee;
   background-color: white;
-  text-align: center;
-  font-weight: bold;
+  text-align: left;
+  font-weight: 700;
+  font-family: 'Noto Sans Mono';
+  overflow-wrap: anywhere;
+  box-shadow: 4px 4px 7px -5px #444;
 }
 
 .modal-hidden {

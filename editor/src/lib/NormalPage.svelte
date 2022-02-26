@@ -2,89 +2,109 @@
   import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import {
-    loadContent,
+    getMarkdownTextFromFile,
     saveAsMarkdownFile,
     changeFileName,
-    createNewFile
+    createNewFile,
+    searchFiles,
   } from "./components/Rpc.ts";
   import {Mode, ViewerType} from "./components/Config.ts";
   import Header from "./components/Header.svelte";
   import Editor from "./components/Editor.svelte";
   import Modal from "./components/Modal.svelte";
+  import CommandModal from "./components/CommandModal.svelte";
   import ViewerMarked from "./components/ViewerMarked.svelte";
   import ViewerMarkmap from "./components/ViewerMarkmap.svelte";
+  import {
+    editorChangeEventPub,
+    EditorChangeEvent,
+    changeFileNameEventPub,
+    ChangeFileNameEvent,
+    createNewFileEventPub,
+    searchFileEventPub,
+  } from "./components/Event.ts";
 
   export let config;
 
   const content = writable("");
-
   let fileId = config.fileId;
-  if(config.indexPageFileId) {
-    fileId = config.indexPageFileId;
-  }
-
-  let editorComponent;
   let fileLastModified = config.fileLastModified;
-  let modalContent;
+  let editorComponent;
+  let commandModalVisible;
+  let viewerComponent;
 
-  let Viewer;
-  switch(config.viewerType) {
-    case ViewerType.marked:
-      Viewer = ViewerMarked;
-      break;
-    case ViewerType.markmap:
-      Viewer = ViewerMarkmap;
-      break;
+  function init() {
+    switch(config.viewerType) {
+      case ViewerType.marked:
+        viewerComponent = ViewerMarked;
+        break;
+      case ViewerType.markmap:
+        viewerComponent = ViewerMarkmap;
+        break;
+    }
   }
 
-  function onEditorChange(event) {
-    const editorValueText = event.detail;
-    content.set(editorValueText);
-    saveAsMarkdownFile(fileId, editorValueText, config.sessionId).then(()=>{
+  editorChangeEventPub.subscribe((ev: EditorChangeEvent)=>{
+    if(ev == null) { return; }
+    console.log("sub editorChangeEvent on NormalPage");
+    content.set(ev.value);
+    saveAsMarkdownFile(fileId, ev.value, config.sessionId).then(()=>{
       fileLastModified = new Date();
     });
-  }
+  });
 
-  function onChangeFileName(event) {
-    const newFileName = event.detail
-    changeFileName(config.fileId, newFileName).then(()=>{
-      config.fileName = newFileName;
+  changeFileNameEventPub.subscribe((ev: ChangeFileNameEvent)=> {
+    if(ev == null) { return; }
+    console.log("sub changefileNameEvent on NormalPage");
+    changeFileName(config.fileId, ev.fileName).then(()=>{
+      config.fileName = ev.fileName;
     })
     .catch(()=>{
       config.fileName = config.fileName;
       console.log("failed to file name changed ")
     });
+  });
+
+  createNewFileEventPub.subscribe((ev: CreateNewFileEvent) => {
+    if(ev == null) { return; }
+    console.log("sub CreateNewFileEvent");
+    let content = editorComponent.getSelection();
+    createNewFile(ev.fileName, content);
+  });
+
+  searchFileEventPub.subscribe((ev: SearchFileEvent)=>{
+    if(ev == null) { return; }
+    console.log("sub SearchFileEvent");
+    searchFiles(ev.value);
+  });
+
+  function handleKeydownEvent(event) {
+    if(event["ctrlKey"] && event.keyCode === 222) {
+      commandModalVisible = !commandModalVisible;
+    }
   }
 
-  function onCreateNewFileCommand(event) {
-    console.log("onCreateNewFileCommand");
-    const o = event.detail;
-    createNewFile(o["fileName"], o["content"]).then((fileInfo)=>{
-      modalContent = `
-        <h2> Sucessfully file created. </h2>
-        <a target="_blank" href="${fileInfo["editorUrl"]}"> ${fileInfo["editorUrl"]}</a>
-        <p> Vim </p>
-        <a target="_blank" href="${fileInfo["editorUrl"] + "&editorKeymap=vim"}"> ${fileInfo["editorUrl"] + "&editorKeymap=vim"}</a>
-      `;
-      console.log(`sucessfully file created: ${fileInfo}`);
-    })
-    .catch((e)=>{
-      console.log("faild to create new file");
-      console.log(e);
-    });
+  $: if(!commandModalVisible) {
+    if(editorComponent != null) {
+      editorComponent.focus();
+    }
   }
 
   onMount(()=>{
-    console.log("load content");
-
-    loadContent(fileId).then((_content)=>{
+    getMarkdownTextFromFile(fileId).then((results)=>{
+      console.log("get initial markdown text");
+      console.log(results);
       if(editorComponent != null) {
-        editorComponent.setup(_content);
+        editorComponent.setup(results.results.content);
       }
-      content.set(_content);
+      content.set(results.results.content);
     });
   })
+
+  init();
 </script>
+
+<svelte:window on:keydown={handleKeydownEvent}/>
 
 <div id="normal-page">
   <div id="header-wrapper">
@@ -93,36 +113,31 @@
       fileName={config.fileName}
       fileUrl={config.fileUrl}
       fileLastModified={fileLastModified}
-      on:changeFileName={onChangeFileName}
     />
   </div>
 
-  <Modal content={modalContent} />
+  <CommandModal bind:visible={commandModalVisible} config={config} />
 
   <div id="container">
     {#if config.mode === Mode.editor}
       <Editor
         bind:this={editorComponent}
         config={config}
-        on:editorChange={onEditorChange}
-        on:createNewFileCommand={onCreateNewFileCommand}
       />
 
     {:else if config.mode === Mode.viewer}
-      <svelte:component this={Viewer} content={content} mode={config.mode}/>
+      <svelte:component this={viewerComponent} content={content} mode={config.mode}/>
 
     {:else}
       <div class="half-column">
         <Editor
           bind:this={editorComponent}
           config={config}
-          on:editorChange={onEditorChange}
-          on:createNewFileCommand={onCreateNewFileCommand}
         />
       </div>
 
       <div class="half-column">
-        <svelte:component this={Viewer} content={content} mode={config.mode}/>
+        <svelte:component this={viewerComponent} content={content} mode={config.mode}/>
       </div>
 
     {/if}

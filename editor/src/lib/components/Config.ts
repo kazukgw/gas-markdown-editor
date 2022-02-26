@@ -24,6 +24,7 @@ export enum PageType {
 export class Config {
   data: Object;
   baseUrl: string;
+  fullUrl: string;
   page: PageType;
   mode: Mode;
   viewerType: ViewerType;
@@ -40,6 +41,7 @@ export class Config {
     console.log(this.data);
 
     this.baseUrl = this.data["baseUrl"];
+    this.fullUrl = this.data["fullUrl"];
     this.mode = this.data["mode"];
     this.page = this.data["page"];
     this.viewerType = this.data["viewerType"];

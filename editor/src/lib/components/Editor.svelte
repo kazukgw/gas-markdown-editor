@@ -1,99 +1,33 @@
 <script lang="ts">
-  const CodeMirror = window.CodeMirror;
-
   import {onMount} from 'svelte';
   import { createEventDispatcher } from 'svelte';
 
+  import { initCodeMirror } from './CodeMirror.ts';
+  import {
+    createNewFileEventPub,
+    CreateNewFileEvent,
+    editorChangeEventPub,
+    EditorChangeEvent,
+  } from "./Event.ts";
   import {Config} from "./Config.ts";
+
 
   export let config: Config;
 
-  const dispatch = createEventDispatcher();
-
-  CodeMirror.Vim.defineAction("fold", function (cm, _ /* actionArgs */) {
-    CodeMirror.commands.fold(cm);
-  });
-  CodeMirror.Vim.defineAction("foldAll", function (cm, _) {
-    CodeMirror.commands.foldAll(cm);
-  });
-  CodeMirror.Vim.defineAction("unfold", function (cm, _ /* actionArgs */) {
-    CodeMirror.commands.unfold(cm);
-  });
-  CodeMirror.Vim.defineAction("unfoldAll", function (cm, _) {
-    CodeMirror.commands.unfoldAll(cm);
-  });
-  CodeMirror.Vim.defineEx("createNewFile", null, function (cm, params) {
-    console.log(`createNewFile`);
-    console.log(params);
-    const args = params["args"] || [];
-    const fileName = args.shift();
-    let content = "";
-    if(params["line"] != null && params["lineEnd"] != null){
-      content = cm.getRange(
-        {line: params.line, ch:0},
-        {line: params.lineEnd, ch: Infinity}
-      );
-    }
-    console.log("dispatch createNewFileCommand");
-    dispatch('createNewFileCommand', {
-      fileName: fileName,
-      content: content,
-    });
-  });
-  CodeMirror.Vim.mapCommand(
-    "zc",
-    "action",
-    "fold",
-    {},
-    { context: "normal" }
-  );
-  CodeMirror.Vim.mapCommand(
-    "zM",
-    "action",
-    "foldAll",
-    {},
-    { context: "normal" }
-  );
-  CodeMirror.Vim.mapCommand(
-    "zo",
-    "action",
-    "unfold",
-    {},
-    { context: "normal" }
-  );
-  CodeMirror.Vim.mapCommand(
-    "zR",
-    "action",
-    "unfoldAll",
-    {},
-    { context: "normal" }
-  );
-
-  const options = {
-    lineWrapping: true,
-    lineNumbers: true,
-    mode: "text/x-markdown",
-    matchBrackets: true,
-    showCursorWhenSelecting: true,
-    theme: "monokai",
-    showTrailingSpace: true,
-    styleActiveLine: true,
-    foldGutter: true,
-    gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-    scrollbarStyle: "overlay",
-    keyMap: config.editorKeymap,
-  };
 
   let codemirror;
+  export function setup(content){
+    codemirror.setValue(content);
+  }
+
+
+  const CodeMirror = window.CodeMirror;
+
 
   onMount(()=>{
-    codemirror = CodeMirror.fromTextArea(
-      document.getElementById("editor"),
-      options
-    );
-    codemirror.on("change", ()=>{
-      dispatch('editorChange', codemirror.getValue());
-    });
+    const options = { keyMap: config.editorKeymap };
+
+    codemirror = initCodeMirror(CodeMirror, document.getElementById("editor"), options);
 
     codemirror.setOption("extraKeys", {
       Tab: function (cm) {
@@ -101,11 +35,22 @@
         cm.replaceSelection(spaces);
       },
     });
+
+    codemirror.on("change", ()=>{
+      editorChangeEventPub.set(new EditorChangeEvent(codemirror.getValue()));
+    });
   })
 
-  export function setup(content){
-    codemirror.setValue(content);
-  }
+  export const focus = ()=>{
+    if(codemirror != null) {
+      codemirror.focus();
+    }
+  };
+
+  export const getSelection = ()=>{
+    if(codemirror == null) { return; }
+    return codemirror.getSelection();
+  };
 </script>
 
 <div id="editor-wrapper">
